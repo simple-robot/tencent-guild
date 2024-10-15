@@ -15,43 +15,67 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.jetbrains.dokka.base.DokkaBase
-import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import java.time.Year
 
 plugins {
     id("org.jetbrains.dokka")
 }
 
+
 repositories {
     mavenCentral()
 }
+
+dependencies {
+    dokka(project(":simbot-component-qq-guild-api"))
+    dokka(project(":simbot-component-qq-guild-stdlib"))
+    dokka(project(":simbot-component-qq-guild-core"))
+}
+
 
 fun org.jetbrains.dokka.gradle.AbstractDokkaTask.configOutput(format: String) {
     moduleName.set("Simple Robot 组件 | QQ Guild")
     outputDirectory.set(rootProject.file("build/dokka/$format"))
 }
 
-tasks.named<org.jetbrains.dokka.gradle.DokkaMultiModuleTask>("dokkaHtmlMultiModule") {
-    configOutput("html")
-
-    rootProject.file("README.md").takeIf { it.exists() }?.also {
-        includes.from(it)
-    }
-
-    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-        customAssets = listOf(
-            rootProject.file(".simbot/dokka-assets/logo-icon.svg"),
-            rootProject.file(".simbot/dokka-assets/logo-icon-light.svg"),
+dokka {
+    pluginsConfiguration.html {
+        customAssets.from(
+            ".simbot/dokka-assets/logo-icon.svg",
+            ".simbot/dokka-assets/logo-icon-light.svg"
         )
-        customStyleSheets = listOf(rootProject.file(".simbot/dokka-assets/css/kdoc-style.css"))
+        customStyleSheets.from(".simbot/dokka-assets/css/kdoc-style.css")
         if (!isSimbotLocal()) {
             templatesDir = rootProject.file(".simbot/dokka-templates")
         }
-        footerMessage = "© 2022-${Year.now().value} <a href='https://github.com/simple-robot'>Simple Robot</a>. All rights reserved."
+        footerMessage =
+            "© 2022-${Year.now().value} <a href='https://github.com/simple-robot'>Simple Robot</a>. All rights reserved."
         separateInheritedMembers = true
         mergeImplicitExpectActualDeclarations = true
         homepageLink = P.ComponentQQGuild.HOMEPAGE
     }
 }
+
+//tasks.named<org.jetbrains.dokka.gradle.DokkaMultiModuleTask>("dokkaHtmlMultiModule") {
+//    configOutput("html")
+//
+//    rootProject.file("README.md").takeIf { it.exists() }?.also {
+//        includes.from(it)
+//    }
+
+//    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+//        customAssets = listOf(
+//            rootProject.file(".simbot/dokka-assets/logo-icon.svg"),
+//            rootProject.file(".simbot/dokka-assets/logo-icon-light.svg"),
+//        )
+//        customStyleSheets = listOf(rootProject.file(".simbot/dokka-assets/css/kdoc-style.css"))
+//        if (!isSimbotLocal()) {
+//            templatesDir = rootProject.file(".simbot/dokka-templates")
+//        }
+//        footerMessage = "© 2022-${Year.now().value} <a href='https://github.com/simple-robot'>Simple Robot</a>. All rights reserved."
+//        separateInheritedMembers = true
+//        mergeImplicitExpectActualDeclarations = true
+//        homepageLink = P.ComponentQQGuild.HOMEPAGE
+//    }
+//}
 
